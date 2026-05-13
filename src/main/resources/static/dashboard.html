@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KINEDICAL Patient Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 28px 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      line-height: 1.1;
+    }
+    .status-message {
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+      margin-bottom: 18px;
+    }
+    .status-message.error {
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    .status-message.loading {
+      border: 1px solid #93c5fd;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      border-radius: 24px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 22px 40px rgba(15, 23, 42, 0.12);
+    }
+    .card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+    }
+    .card-body {
+      padding: 20px;
+    }
+    .card-title {
+      margin: 0 0 12px;
+      font-size: 1.18rem;
+      color: #111827;
+    }
+    .card-summary {
+      margin: 0 0 16px;
+      color: #475569;
+      line-height: 1.7;
+      min-height: 76px;
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      color: #64748b;
+      align-items: center;
+    }
+    .retry-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      border-radius: 9999px;
+      border: none;
+      background: #2563eb;
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+    .retry-button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <p style="margin:0; color:#64748b;">Dashboard bệnh nhân</p>
+        <h1>Gợi ý bài viết sức khỏe cho bạn</h1>
+      </div>
+    </div>
+
+    <div id="statusContainer"></div>
+    <div id="cardsContainer" class="cards"></div>
+  </div>
+
+  <script>
+    const statusContainer = document.getElementById("statusContainer");
+    const cardsContainer = document.getElementById("cardsContainer");
+
+    function showStatus(message, type = "info") {
+      statusContainer.innerHTML = `
+        <div class="status-message ${type}">
+          ${message}
+        </div>
+      `;
+    }
+
+    function renderCards(items) {
+      if (!items || items.length === 0) {
+        cardsContainer.innerHTML = `
+          <div class="status-message">
+            Chưa có gợi ý phù hợp. Vui lòng thử lại sau.
+          </div>
+        `;
+        return;
+      }
+
+      cardsContainer.innerHTML = items.map(item => `
+        <article class="card">
+          <img src="${item.imageUrl || 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=900&q=80'}" alt="${item.title}">
+          <div class="card-body">
+            <h2 class="card-title">${item.title}</h2>
+            <p class="card-summary">${item.summary || 'Không có tóm tắt.'}</p>
+            <div class="card-meta">
+              <span>Gợi ý AI</span>
+              <span>${item.score ? item.score.toFixed(2) : ''}</span>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function fetchRecommendations() {
+      showStatus('Đang tải gợi ý từ AI, vui lòng chờ...', 'loading');
+      cardsContainer.innerHTML = '';
+
+      try {
+        const response = await fetch('/api/recommendations');
+        if (!response.ok) {
+          throw new Error(`Server trả về lỗi ${response.status}`);
+        }
+
+        const data = await response.json();
+        statusContainer.innerHTML = '';
+        renderCards(data.recommendations || data);
+      } catch (error) {
+        statusContainer.innerHTML = `
+          <div class="status-message error">
+            Xin lỗi, hệ thống gợi ý tạm thời không khả dụng. Vui lòng thử lại sau.
+            <div style="margin-top: 12px;">
+              <button class="retry-button" onclick="fetchRecommendations()">Thử lại</button>
+            </div>
+          </div>
+        `;
+        console.error('Recommendation load error:', error);
+      }
+    }
+
+    fetchRecommendations();
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: kinedical-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kinedical-net
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kinedical-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/kinedical
+      - SPRING_RECOMMEND_API_BASE_URL=http://recommendation:8000
+    networks:
+      - kinedical-net
+
+  recommendation:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    container_name: kinedical-recommendation
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    environment:
+      - SPRING_BASE_URL=http://backend:8080
+    networks:
+      - kinedical-net
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  kinedical-net:
+    driver: bridge
