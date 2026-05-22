@@ -15,7 +15,10 @@ public class KineMedicalApplication {
     }
 
     @Bean
-    public CommandLineRunner initDefaultUsers(UserService userService) {
-        return args -> userService.initializeDefaultAccounts();
+    public CommandLineRunner initDefaultData(UserService userService, com.kinedical.service.HealthContentService healthContentService) {
+        return args -> {
+            userService.initializeDefaultAccounts();
+            healthContentService.initializeDefaultArticles();
+        };
     }
 }

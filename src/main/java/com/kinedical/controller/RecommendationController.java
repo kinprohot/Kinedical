@@ -45,7 +45,7 @@ public class RecommendationController {
     }
 
     @GetMapping
-    public Mono<ResponseEntity<List<HealthContent>>> getRecommendations(
+    public ResponseEntity<List<HealthContent>> getRecommendations(
             @RequestParam(required = false) String userId,
             Authentication authentication) {
 
@@ -56,7 +56,7 @@ public class RecommendationController {
 
         List<HealthContent> published = healthContentRepository.findByStatusOrderByPublishDateDesc(HealthContent.ContentStatus.PUBLISHED);
         if (published.isEmpty()) {
-            return Mono.just(ResponseEntity.ok(List.of()));
+            return ResponseEntity.ok(List.of());
         }
 
         RecommendRequest request = new RecommendRequest();
@@ -97,25 +97,24 @@ public class RecommendationController {
             }
         }
 
-        return recommendClientService.recommendAsync(request)
-                .map(response -> {
-                    List<HealthContent> sortedContents = new java.util.ArrayList<>();
-                    if (response != null && response.getRecommendations() != null) {
-                        for (RecommendResponse.RecommendItem rec : response.getRecommendations()) {
-                            healthContentRepository.findById(rec.getItemId()).ifPresent(sortedContents::add);
-                        }
-                    }
-                    // Fallback to published if for some reason FastAPI returns nothing
-                    if (sortedContents.isEmpty()) {
-                        sortedContents.addAll(published.stream().limit(5).toList());
-                    }
-                    return ResponseEntity.ok(sortedContents);
-                })
-                .onErrorResume(ex -> {
-                    // Fallback on error to default published list
-                    List<HealthContent> fallback = published.stream().limit(5).toList();
-                    return Mono.just(ResponseEntity.ok(fallback));
-                });
+        try {
+            RecommendResponse response = recommendClientService.recommendAsync(request).block();
+            List<HealthContent> sortedContents = new java.util.ArrayList<>();
+            if (response != null && response.getRecommendations() != null) {
+                for (RecommendResponse.RecommendItem rec : response.getRecommendations()) {
+                    healthContentRepository.findById(rec.getItemId()).ifPresent(sortedContents::add);
+                }
+            }
+            // Fallback to published if for some reason FastAPI returns nothing
+            if (sortedContents.isEmpty()) {
+                sortedContents.addAll(published.stream().limit(5).toList());
+            }
+            return ResponseEntity.ok(sortedContents);
+        } catch (Exception ex) {
+            // Fallback on error to default published list
+            List<HealthContent> fallback = published.stream().limit(5).toList();
+            return ResponseEntity.ok(fallback);
+        }
     }
 
     private String resolveUserId(Authentication authentication) {
