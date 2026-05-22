@@ -30,6 +30,16 @@ public class HealthContentController {
         return healthContentService.findPublished();
     }
 
+    @GetMapping("/published")
+    public List<HealthContent> getPublished() {
+        return healthContentService.findPublished();
+    }
+
+    @GetMapping("/category/{category}")
+    public List<HealthContent> getByCategory(@PathVariable HealthContent.ContentCategory category) {
+        return healthContentService.findByCategory(category);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<HealthContent> getById(@PathVariable String id) {
         return healthContentService.findById(id)

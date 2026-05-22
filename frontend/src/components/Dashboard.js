@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import HealthContentCard from './HealthContentCard';
 import { healthContentAPI } from '../services/api';
 import '../styles/Dashboard.css';
@@ -12,12 +12,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
 
-  // Lấy dữ liệu từ API khi component mount
-  useEffect(() => {
-    fetchHealthContent();
-  }, [filter]);
-
-  const fetchHealthContent = async () => {
+  const fetchHealthContent = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -33,7 +28,6 @@ const Dashboard = () => {
       }
 
       if (result.success) {
-        // Đảm bảo dữ liệu là mảng
         const data = Array.isArray(result.data) ? result.data : [];
         setContentList(data);
       } else {
@@ -41,26 +35,28 @@ const Dashboard = () => {
         setContentList([]);
       }
     } catch (err) {
-      setError(
-        'Có lỗi xảy ra khi tải dữ liệu. Vui lòng kiểm tra kết nối internet.'
-      );
+      setError('Có lỗi xảy ra khi tải dữ liệu. Vui lòng kiểm tra kết nối internet.');
       setContentList([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  // Lấy dữ liệu từ API khi component mount
+  useEffect(() => {
+    fetchHealthContent();
+  }, [fetchHealthContent]);
 
   // Danh sách các danh mục
   const categories = [
     { value: 'all', label: 'Tất cả' },
     { value: 'published', label: 'Đã xuất bản' },
-    { value: 'CARDIOLOGY', label: 'Tim mạch' },
-    { value: 'NEUROLOGY', label: 'Thần kinh' },
-    { value: 'ORTHOPEDICS', label: 'Xương khớp' },
-    { value: 'DERMATOLOGY', label: 'Da liễu' },
     { value: 'NUTRITION', label: 'Dinh dưỡng' },
+    { value: 'DISEASE', label: 'Bệnh lý' },
+    { value: 'EXERCISE', label: 'Tập luyện' },
     { value: 'MENTAL_HEALTH', label: 'Sức khỏe tâm thần' },
-    { value: 'FITNESS', label: 'Thể dục' },
+    { value: 'PREVENTION', label: 'Phòng bệnh' },
+    { value: 'OTHER', label: 'Khác' },
   ];
 
   return (

@@ -29,3 +29,31 @@ def test_recommend_endpoint_returns_200_and_top_five():
     scores = [item["score"] for item in json_data["recommendations"]]
     assert all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1))
     assert json_data["recommendations"][0]["item_id"] == "item2"
+
+
+def test_predict_disease_endpoint_flu():
+    payload = {"symptoms": "Tôi bị sốt cao kèm theo ho và đau họng"}
+    response = client.post("/ai/predict-disease", json=payload)
+    assert response.status_code == 200
+    
+    json_data = response.json()
+    assert json_data["predicted_disease"] == "Cúm mùa (Influenza)"
+    assert json_data["confidence_score"] == 0.88
+    assert len(json_data["ai_recommendations"]) > 0
+
+
+def test_predict_disease_endpoint_cardio():
+    payload = {"symptoms": "Đau ngực dữ dội và khó thở khi vận động"}
+    response = client.post("/predict-disease", json=payload)
+    assert response.status_code == 200
+    
+    json_data = response.json()
+    assert json_data["predicted_disease"] == "Nghi vấn bệnh lý Tim mạch / Đau thắt ngực"
+    assert json_data["confidence_score"] == 0.78
+
+
+def test_predict_disease_endpoint_empty():
+    payload = {"symptoms": ""}
+    response = client.post("/predict-disease", json=payload)
+    assert response.status_code == 400
+

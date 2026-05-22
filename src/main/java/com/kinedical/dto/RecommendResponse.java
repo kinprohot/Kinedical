@@ -2,9 +2,13 @@ package com.kinedical.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RecommendResponse {
 
+    @JsonProperty("user_id")
     private String userId;
+
     private List<RecommendItem> recommendations;
 
     public String getUserId() {
@@ -24,7 +28,9 @@ public class RecommendResponse {
     }
 
     public static class RecommendItem {
+        @JsonProperty("item_id")
         private String itemId;
+
         private double score;
 
         public String getItemId() {

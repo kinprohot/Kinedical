@@ -13,27 +13,48 @@ import com.kinedical.repository.MedicalRecordRepository;
 public class MedicalRecordService {
 
     private final MedicalRecordRepository medicalRecordRepository;
+    private final AuditLogService auditLogService;
 
-    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository) {
+    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository, AuditLogService auditLogService) {
         this.medicalRecordRepository = medicalRecordRepository;
+        this.auditLogService = auditLogService;
     }
 
-    public MedicalRecord create(MedicalRecord medicalRecord) {
+    public MedicalRecord create(MedicalRecord medicalRecord, String createdBy) {
         Instant now = Instant.now();
         medicalRecord.setCreatedAt(now);
         medicalRecord.setUpdatedAt(now);
-        return medicalRecordRepository.save(medicalRecord);
+        medicalRecord.setUpdatedBy(createdBy);
+        MedicalRecord saved = medicalRecordRepository.save(medicalRecord);
+        auditLogService.log("CREATE_RECORD", createdBy, "MedicalRecord", saved.getId(), "Created medical record.");
+        return saved;
     }
 
     public List<MedicalRecord> findAll() {
         return medicalRecordRepository.findAll();
     }
 
+    public List<MedicalRecord> findAllForUser(String userId, String role) {
+        if ("PATIENT".equalsIgnoreCase(role)) {
+            return medicalRecordRepository.findByPatientIdOrderByVisitDateDesc(userId);
+        }
+        return findAll();
+    }
+
     public Optional<MedicalRecord> findById(String id) {
         return medicalRecordRepository.findById(id);
     }
 
-    public MedicalRecord update(String id, MedicalRecord updatedRecord) {
+    public Optional<MedicalRecord> findByIdForUser(String id, String userId, String role) {
+        return findById(id).filter(record -> {
+            if ("PATIENT".equalsIgnoreCase(role)) {
+                return record.getPatientId() != null && record.getPatientId().equals(userId);
+            }
+            return true;
+        });
+    }
+
+    public MedicalRecord update(String id, MedicalRecord updatedRecord, String updatedBy) {
         return medicalRecordRepository.findById(id)
                 .map(existing -> {
                     existing.setPatientId(updatedRecord.getPatientId());
@@ -50,14 +71,18 @@ public class MedicalRecordService {
                     existing.setAttachments(updatedRecord.getAttachments());
                     existing.setCustomFields(updatedRecord.getCustomFields());
                     existing.setNotes(updatedRecord.getNotes());
-                    existing.setUpdatedBy(updatedRecord.getUpdatedBy());
+                    existing.setUpdatedBy(updatedBy);
                     existing.setUpdatedAt(Instant.now());
-                    return medicalRecordRepository.save(existing);
+                    MedicalRecord saved = medicalRecordRepository.save(existing);
+                    auditLogService.log("UPDATE_RECORD", updatedBy, "MedicalRecord", saved.getId(),
+                            "Updated medical record.");
+                    return saved;
                 })
                 .orElseThrow(() -> new IllegalArgumentException("MedicalRecord not found: " + id));
     }
 
-    public void delete(String id) {
+    public void delete(String id, String deletedBy) {
         medicalRecordRepository.deleteById(id);
+        auditLogService.log("DELETE_RECORD", deletedBy, "MedicalRecord", id, "Deleted medical record.");
     }
 }

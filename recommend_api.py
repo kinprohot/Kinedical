@@ -37,6 +37,17 @@ class RecommendResponse(BaseModel):
     recommendations: List[RecommendItem]
 
 
+class SymptomRequest(BaseModel):
+    symptoms: str = Field(..., description="Raw text describing the patient's symptoms")
+
+
+class PredictResponse(BaseModel):
+    predicted_disease: str = Field(..., description="Name of the predicted disease")
+    confidence_score: float = Field(..., description="Confidence score from 0.0 to 1.0")
+    ai_recommendations: List[str] = Field(..., description="Actionable AI recommendations")
+
+
+
 def parse_publish_date(date_str: Optional[str]) -> datetime:
     if not date_str:
         return datetime.now(timezone.utc)
@@ -145,3 +156,108 @@ def recommend(request: RecommendRequest, alpha: float = 0.7):
         raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Recommendation processing failed: {exc}")
+
+
+def analyze_symptoms_and_predict(symptoms_text: str) -> PredictResponse:
+    text = symptoms_text.lower()
+    
+    # Define clinical rules/mappings
+    # Influenza / Respiratory Infection
+    if any(k in text for k in ["sốt", "fever", "ho", "cough", "sổ mũi", "runny nose", "đau họng", "sore throat"]):
+        if any(k in text for k in ["khó thở", "short of breath", "đau ngực", "chest pain"]):
+            return PredictResponse(
+                predicted_disease="Viêm đường hô hấp cấp / Viêm phổi",
+                confidence_score=0.82,
+                ai_recommendations=[
+                    "Đến cơ sở y tế gần nhất ngay để kiểm tra phổi.",
+                    "Hạn chế vận động mạnh và giữ ấm cơ thể.",
+                    "Uống nhiều nước ấm và theo dõi nồng độ oxy SpO2 nếu có thể.",
+                    "Đeo khẩu trang để tránh lây nhiễm cho người xung quanh."
+                ]
+            )
+        return PredictResponse(
+            predicted_disease="Cúm mùa (Influenza)",
+            confidence_score=0.88,
+            ai_recommendations=[
+                "Nghỉ ngơi tại giường, giữ ấm cơ thể.",
+                "Uống nhiều nước ấm và bổ sung Vitamin C.",
+                "Sử dụng thuốc hạ sốt (Paracetamol) nếu sốt trên 38.5°C (tham khảo ý kiến dược sĩ/bác sĩ).",
+                "Theo dõi các triệu chứng nếu kéo dài quá 3 ngày hoặc sốt cao không hạ."
+            ]
+        )
+    
+    # Cardiovascular
+    if any(k in text for k in ["đau ngực", "chest pain", "nhói ngực", "khó thở", "hụt hơi", "tim đập nhanh", "palpitation"]):
+        return PredictResponse(
+            predicted_disease="Nghi vấn bệnh lý Tim mạch / Đau thắt ngực",
+            confidence_score=0.78,
+            ai_recommendations=[
+                "Hạn chế hoạt động thể lực ngay lập tức, ngồi nghỉ ngơi nơi thoáng mát.",
+                "Tránh căng thẳng tâm lý, cố gắng hít thở sâu và đều đặn.",
+                "Cần đặt lịch hẹn sớm với bác sĩ chuyên khoa Tim mạch để đo điện tâm đồ (ECG).",
+                "NẾU đau ngực dữ dội lan ra cánh tay hoặc hàm kéo dài quá 15 phút, hãy gọi cấp cứu ngay lập tức."
+            ]
+        )
+    
+    # Gastrointestinal
+    if any(k in text for k in ["đau bụng", "stomachache", "đau dạ dày", "tiêu chảy", "diarrhea", "buồn nôn", "nôn", "nausea", "vomit", "đầy hơi"]):
+        return PredictResponse(
+            predicted_disease="Rối loạn tiêu hóa / Viêm dạ dày",
+            confidence_score=0.85,
+            ai_recommendations=[
+                "Ăn cháo loãng hoặc các thức ăn mềm, dễ tiêu hóa. Tránh đồ cay nóng, dầu mỡ.",
+                "Bổ sung nước và điện giải (Oresol) nếu bị tiêu chảy hoặc nôn mửa.",
+                "Sử dụng men vi sinh hỗ trợ tiêu hóa.",
+                "Nếu đau bụng dữ dội ở vùng hố chậu phải hoặc sốt cao kèm theo, cần đi khám ngay để loại trừ viêm ruột thừa."
+            ]
+        )
+
+    # Neurological / Tension Headache / Stress
+    if any(k in text for k in ["đau đầu", "headache", "chóng mặt", "dizzy", "mất ngủ", "insomnia", "stress", "căng thẳng", "lo âu"]):
+        if any(k in text for k in ["mất ngủ", "insomnia", "lo âu", "căng thẳng", "stress"]):
+            return PredictResponse(
+                predicted_disease="Hội chứng suy nhược thần kinh / Rối loạn lo âu",
+                confidence_score=0.75,
+                ai_recommendations=[
+                    "Cải thiện vệ sinh giấc ngủ: tắt thiết bị điện tử trước khi ngủ 1 giờ.",
+                    "Thực hành thiền định, yoga hoặc các bài tập hít thở thư giãn cơ thể.",
+                    "Giảm tiêu thụ caffeine (cà phê, trà đặc) và rượu bia.",
+                    "Nếu tình trạng kéo dài gây ảnh hưởng lớn đến cuộc sống, hãy tham vấn ý kiến bác sĩ tâm lý."
+                ]
+            )
+        return PredictResponse(
+            predicted_disease="Đau đầu do căng thẳng (Tension Headache)",
+            confidence_score=0.80,
+            ai_recommendations=[
+                "Nghỉ ngơi trong phòng tối và yên tĩnh.",
+                "Massage nhẹ nhàng vùng thái dương và cổ vai gáy.",
+                "Uống đủ nước và tránh nhìn màn hình điện tử liên tục.",
+                "Có thể dùng thuốc giảm đau thông thường (Paracetamol) nhưng không được lạm dụng."
+            ]
+        )
+
+    # General/Default
+    return PredictResponse(
+        predicted_disease="Triệu chứng không xác định",
+        confidence_score=0.50,
+        ai_recommendations=[
+            "Thông tin triệu chứng cung cấp chưa đủ để phân loại cụ thể.",
+            "Hãy uống nhiều nước, ăn uống đủ chất và nghỉ ngơi hợp lý.",
+            "Nên theo dõi sát sao tình trạng sức khỏe của bản thân.",
+            "Khuyến nghị đặt lịch khám trực tiếp với bác sĩ để có chẩn đoán chính xác nhất."
+        ]
+    )
+
+
+@app.post("/predict-disease", response_model=PredictResponse)
+@app.post("/ai/predict-disease", response_model=PredictResponse)
+def predict_disease(request: SymptomRequest):
+    try:
+        if not request.symptoms.strip():
+            raise HTTPException(status_code=400, detail="Symptoms text must not be empty")
+        return analyze_symptoms_and_predict(request.symptoms)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Symptom analysis failed: {exc}")
+

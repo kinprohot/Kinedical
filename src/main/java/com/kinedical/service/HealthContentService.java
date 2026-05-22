@@ -29,6 +29,11 @@ public class HealthContentService {
         return healthContentRepository.findByStatusOrderByPublishDateDesc(HealthContent.ContentStatus.PUBLISHED);
     }
 
+    public List<HealthContent> findByCategory(HealthContent.ContentCategory category) {
+        return healthContentRepository.findByCategoryAndStatusOrderByPublishDateDesc(
+                category, HealthContent.ContentStatus.PUBLISHED);
+    }
+
     public HealthContent create(HealthContent content) {
         return healthContentRepository.save(content);
     }

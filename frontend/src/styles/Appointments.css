@@ -1,0 +1,460 @@
+.appointments-container {
+  padding: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  color: #f1f5f9;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  margin-right: 260px; /* Sidebar padding */
+}
+
+@media (max-width: 992px) {
+  .appointments-container {
+    margin-right: 0;
+    padding: 1.5rem;
+  }
+}
+
+.appointments-header {
+  margin-bottom: 2.5rem;
+}
+
+.appointments-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.appointments-header p {
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+/* Grid Layout */
+.appointments-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 992px) {
+  .appointments-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Pre-fill Notice */
+.prefill-notice {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 1rem 1.2rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.prefill-text strong {
+  color: #38bdf8;
+}
+
+.clear-prefill {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.clear-prefill:hover {
+  color: #ef4444;
+}
+
+/* Success Banner */
+.success-banner {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  padding: 1rem 1.2rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.8rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin-bottom: 0.8rem;
+}
+
+/* Doctor Select Cards */
+.doctor-cards-selector {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.doctor-cards-selector::-webkit-scrollbar {
+  width: 6px;
+}
+
+.doctor-cards-selector::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+
+.doctor-select-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.doctor-select-card:hover {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(56, 189, 248, 0.3);
+  transform: translateY(-2px);
+}
+
+.doctor-select-card.selected {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: #38bdf8;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+}
+
+.doc-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.doctor-select-card.selected .doc-avatar {
+  border-color: #38bdf8;
+}
+
+.doc-info h4 {
+  margin: 0 0 0.2rem 0;
+  font-size: 1rem;
+  color: #f8fafc;
+}
+
+.doc-spec {
+  margin: 0 0 0.3rem 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.doc-meta {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+/* Premium Inputs */
+.premium-input, .premium-textarea {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0.9rem 1.2rem;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.premium-input:focus, .premium-textarea:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.submit-booking-btn {
+  width: 100%;
+  padding: 1.1rem;
+}
+
+/* Bookings List Cards */
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.booking-card {
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.booking-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(15, 23, 42, 0.5);
+  transform: translateY(-2px);
+}
+
+.booking-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.booking-doc-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.booking-doc-desc {
+  flex-grow: 1;
+}
+
+.booking-doc-desc h4 {
+  margin: 0 0 0.2rem 0;
+  font-size: 0.95rem;
+  color: #f8fafc;
+}
+
+.booking-doc-desc p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.35rem 0.8rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.badge-success {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.booking-details {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.detail-label {
+  color: #64748b;
+  width: 90px;
+}
+
+.detail-val {
+  color: #cbd5e1;
+}
+
+.detail-notes {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.8rem;
+  border-radius: 12px;
+  margin-top: 0.8rem;
+}
+
+.detail-notes strong {
+  display: block;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 0.3rem;
+}
+
+.detail-notes p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.cancel-appt-btn {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-appt-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+}
+
+/* Empty Bookings */
+.empty-bookings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 250px;
+  color: #64748b;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Doctor Table Dashboard */
+.doctor-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.doctor-table th {
+  text-align: left;
+  padding: 1rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.doctor-table td {
+  padding: 1.2rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.table-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.patient-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.notes-cell {
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #94a3b8;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.action-btn.confirm {
+  background: #10b981;
+  color: white;
+}
+
+.action-btn.confirm:hover {
+  background: #059669;
+}
+
+.action-btn.cancel {
+  background: #ef4444;
+  color: white;
+}
+
+.action-btn.cancel:hover {
+  background: #dc2626;
+}
+
+.action-btn.cancel.outline {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.action-btn.cancel.outline:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+.no-action-text {
+  color: #475569;
+}

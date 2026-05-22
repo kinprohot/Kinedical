@@ -215,3 +215,48 @@
 .health-card {
   animation: fadeIn 0.5s ease-out;
 }
+
+/* Interactive Extensions */
+.interactive-stat {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.interactive-stat:hover {
+  transform: translateY(-2px);
+  filter: brightness(0.95);
+}
+
+.active-like {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.active-save {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: #f59e0b !important;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.card-full-body {
+  margin-top: 15px;
+  text-align: left;
+}
+
+.divider-line {
+  height: 1px;
+  background: #ecf0f1;
+  margin: 15px 0;
+}
+
+.body-text {
+  color: #34495e;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.health-card.expanded {
+  height: auto;
+}

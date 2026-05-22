@@ -44,6 +44,22 @@ services:
     networks:
       - kinedical-net
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kinedical-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - HOST=0.0.0.0
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://localhost:8080/api
+    networks:
+      - kinedical-net
+
 volumes:
   mongo_data:
     driver: local
