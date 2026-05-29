@@ -46,7 +46,7 @@ public class RecommendationController {
 
     @GetMapping
     public ResponseEntity<List<HealthContent>> getRecommendations(
-            @RequestParam(required = false) String userId,
+            @RequestParam(value = "userId", required = false) String userId,
             Authentication authentication) {
 
         String activeUserId = resolveUserId(authentication);

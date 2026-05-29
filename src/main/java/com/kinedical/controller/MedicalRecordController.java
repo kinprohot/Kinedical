@@ -40,7 +40,7 @@ public class MedicalRecordController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MedicalRecordDto> getById(@PathVariable String id, Authentication authentication) {
+    public ResponseEntity<MedicalRecordDto> getById(@PathVariable("id") String id, Authentication authentication) {
         var auth = org.springframework.security.core.context.SecurityContextHolder.getContext()
                 .getAuthentication();
         var optional = medicalRecordService.findById(id);
@@ -78,7 +78,7 @@ public class MedicalRecordController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('DOCTOR','ADMIN')")
-    public ResponseEntity<MedicalRecordDto> update(@PathVariable String id, @RequestBody MedicalRecordDto request,
+    public ResponseEntity<MedicalRecordDto> update(@PathVariable("id") String id, @RequestBody MedicalRecordDto request,
             Authentication authentication) {
         try {
             String updatedBy = resolveUserId(authentication);
@@ -91,7 +91,7 @@ public class MedicalRecordController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('DOCTOR','ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable String id, Authentication authentication) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id, Authentication authentication) {
         medicalRecordService.delete(id, resolveUserId(authentication));
         return ResponseEntity.noContent().build();
     }

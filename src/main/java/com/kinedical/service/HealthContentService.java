@@ -30,8 +30,9 @@ public class HealthContentService {
     }
 
     public List<HealthContent> findByCategory(HealthContent.ContentCategory category) {
-        return healthContentRepository.findByCategoryAndStatusOrderByPublishDateDesc(
-                category, HealthContent.ContentStatus.PUBLISHED);
+        return findPublished().stream()
+                .filter(c -> c.getCategory() == category)
+                .toList();
     }
 
     public HealthContent create(HealthContent content) {
@@ -69,8 +70,8 @@ public class HealthContentService {
     }
 
     public void initializeDefaultArticles() {
-        if (healthContentRepository.count() == 0) {
-            List<HealthContent> list = new java.util.ArrayList<>();
+        healthContentRepository.deleteAll(); // Xóa sạch dữ liệu cũ bị lệch/lỗi thời
+        List<HealthContent> list = new java.util.ArrayList<>();
             
             // 1. NUTRITION
             HealthContent art1 = new HealthContent();
@@ -211,6 +212,5 @@ public class HealthContentService {
             list.add(art5);
 
             healthContentRepository.saveAll(list);
-        }
     }
 }

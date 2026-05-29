@@ -133,7 +133,7 @@ export const healthContentAPI = {
 
   getPublishedContent: async () => {
     try {
-      const response = await apiClient.get('/health-contents/published');
+      const response = await apiClient.get('/health-contents');
       return {
         success: true,
         data: response.data,

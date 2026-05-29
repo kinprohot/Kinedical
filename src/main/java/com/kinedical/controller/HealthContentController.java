@@ -27,21 +27,44 @@ public class HealthContentController {
 
     @GetMapping
     public List<HealthContent> listPublished() {
-        return healthContentService.findPublished();
+        System.out.println("[DEBUG] listPublished (root) called");
+        List<HealthContent> res = healthContentService.findPublished();
+        System.out.println("[DEBUG] listPublished returned count: " + (res != null ? res.size() : "null"));
+        return res;
     }
 
     @GetMapping("/published")
     public List<HealthContent> getPublished() {
-        return healthContentService.findPublished();
+        System.out.println("[DEBUG] getPublished (/published) called");
+        List<HealthContent> res = healthContentService.findPublished();
+        System.out.println("[DEBUG] getPublished returned count: " + (res != null ? res.size() : "null"));
+        return res;
     }
 
     @GetMapping("/category/{category}")
-    public List<HealthContent> getByCategory(@PathVariable HealthContent.ContentCategory category) {
-        return healthContentService.findByCategory(category);
+    public List<HealthContent> getByCategory(@PathVariable("category") String category) {
+        System.out.println("[DEBUG] getByCategory called with: " + category);
+        try {
+            if (category == null || category.trim().isEmpty()) {
+                System.out.println("[DEBUG] Category is null or empty");
+                return List.of();
+            }
+            String upper = category.toUpperCase().trim();
+            System.out.println("[DEBUG] Upper case category: " + upper);
+            HealthContent.ContentCategory cat = HealthContent.ContentCategory.valueOf(upper);
+            System.out.println("[DEBUG] Mapped to enum: " + cat);
+            List<HealthContent> res = healthContentService.findByCategory(cat);
+            System.out.println("[DEBUG] findByCategory returned count: " + (res != null ? res.size() : "null"));
+            return res;
+        } catch (Exception ex) {
+            System.out.println("[DEBUG] Exception in getByCategory: " + ex.getMessage());
+            ex.printStackTrace();
+            return List.of();
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HealthContent> getById(@PathVariable String id) {
+    public ResponseEntity<HealthContent> getById(@PathVariable("id") String id) {
         return healthContentService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -57,7 +80,7 @@ public class HealthContentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HealthContent> update(@PathVariable String id, @RequestBody HealthContent content) {
+    public ResponseEntity<HealthContent> update(@PathVariable("id") String id, @RequestBody HealthContent content) {
         try {
             content.setUpdatedAt(java.time.Instant.now());
             HealthContent updated = healthContentService.update(id, content);
@@ -68,7 +91,7 @@ public class HealthContentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         healthContentService.delete(id);
         return ResponseEntity.noContent().build();
     }

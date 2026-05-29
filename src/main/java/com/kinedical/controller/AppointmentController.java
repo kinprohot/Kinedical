@@ -72,7 +72,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<Appointment> updateStatus(@PathVariable String id, @RequestBody StatusRequest request, Authentication authentication) {
+    public ResponseEntity<Appointment> updateStatus(@PathVariable("id") String id, @RequestBody StatusRequest request, Authentication authentication) {
         String userId = resolveUserId(authentication);
         String role = resolveUserRole(authentication);
 
